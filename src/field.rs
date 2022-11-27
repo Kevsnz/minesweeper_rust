@@ -31,6 +31,7 @@ pub struct Game {
     state: GameState,
     field: Vec<Vec<Tile>>,
     flag_count: i32,
+    revealed_count: i32,
     preview: PreviewState,
 }
 
@@ -45,6 +46,7 @@ impl Game {
             state: GameState::Playing(None),
             field,
             flag_count: 0,
+            revealed_count: 0,
             preview: PreviewState::NoPreview,
         }
     }
@@ -54,6 +56,7 @@ impl Game {
         self.field = field;
         self.state = GameState::Playing(None);
         self.flag_count = 0;
+        self.revealed_count = 0;
         self.preview = PreviewState::NoPreview;
     }
 
@@ -300,7 +303,11 @@ impl Game {
             return;
         }
 
-        self.reveal_rec(x, y)
+        self.reveal_rec(x, y);
+
+        if self.revealed_count + self.mine_count == (self.w * self.h) as i32 {
+            self.game_yay();
+        }
     }
 
     fn reveal_rec(&mut self, x: usize, y: usize) {
@@ -310,6 +317,7 @@ impl Game {
 
         let tile = &mut self.field[x][y];
         tile.revealed = true;
+        self.revealed_count += 1;
         match tile.content {
             TileContent::Bomb => self.game_boom(),
             TileContent::Empty(c) => {

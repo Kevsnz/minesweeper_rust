@@ -199,6 +199,7 @@ impl<'a> Drawer<'a> {
                 let rect = match (&tile.revealed, &tile.flagged, &tile.content) {
                     (true, false, TileContent::Bomb) => Rect::new(18, 18, 16, 16),
                     (true, true, TileContent::Empty(_)) => Rect::new(36, 36, 16, 16),
+                    (true, true, TileContent::Bomb) => Rect::new(18, 36, 16, 16),
                     (true, false, TileContent::Empty(i)) => Rect::new(i * 18, 0, 16, 16),
                     (false, false, TileContent::Bomb) => {
                         if matches!(game.state(), GameState::Playing(_)) {
@@ -216,7 +217,7 @@ impl<'a> Drawer<'a> {
                     }
 
                     (false, true, _) => Rect::new(18, 36, 16, 16),
-                    (_, _, _) => Rect::new(36, 18, 16, 16),
+                    // (_, _, _) => Rect::new(36, 18, 16, 16),
                 };
 
                 self.assets

@@ -42,9 +42,9 @@ fn run_game_loop(mut drawer: Drawer, mut game: Game) {
     let mut i = 0.0;
     let mut next = Instant::now().checked_add(fps_time).unwrap();
 
-    'running: loop {
+    loop {
         if drawer.handle_events(&mut game) {
-            break 'running;
+            break;
         }
 
         i = (i + 0.03) % (std::f64::consts::PI * 2.0);

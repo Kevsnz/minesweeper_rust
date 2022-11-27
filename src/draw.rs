@@ -4,7 +4,7 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::surface::Surface;
 
-use crate::field::{GameState, Tile, TileContent, TileState};
+use crate::field::{GameState, TileContent};
 use crate::Game;
 
 pub struct Drawer<'a> {

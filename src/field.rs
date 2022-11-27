@@ -66,7 +66,7 @@ impl Game {
                 continue;
             }
 
-            Game::place_mine(&mut field, x, x, w, h);
+            Game::place_mine(&mut field, x, y, w, h);
             c += 1;
         }
 
@@ -122,7 +122,7 @@ impl Game {
     }
 
     fn place_mine(field: &mut Vec<Vec<Tile>>, x: usize, y: usize, w: usize, h: usize) -> bool {
-        let tile = &mut field[x][x];
+        let tile = &mut field[x][y];
 
         if let TileContent::Bomb = tile.content {
             panic!("Cannot place bomb - already bomb here!");

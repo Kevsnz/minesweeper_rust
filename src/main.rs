@@ -10,7 +10,29 @@ use field::Game;
 const FPS: f64 = 60.0;
 
 fn main() {
-    let game = field::Game::new(10, 10, 16);
+    let (mut w, mut h, mut mc) = (8, 8, 10);
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() >= 4 {
+        w = args[1]
+            .parse()
+            .expect("Cannot parse first argument (field width)!");
+        h = args[2]
+            .parse()
+            .expect("Cannot parse first argument (field height)!");
+        mc = args[3]
+            .parse()
+            .expect("Cannot parse first argument (mine count)!");
+
+        if w < 8 || h < 8 || w > 200 || h > 200 || mc < 10 {
+            println!(
+                "Invalid parameters: width: {}, height: {}, mine count: {}!",
+                w, h, mc
+            );
+            println!("200 >= w,h >= 8, mine count >= 10");
+            std::process::exit(1);
+        }
+    }
+    let game = field::Game::new(w, h, mc);
     let drawer = Drawer::initialize_game(game.width() as u32, game.height() as u32);
     run_game_loop(drawer, game);
 }

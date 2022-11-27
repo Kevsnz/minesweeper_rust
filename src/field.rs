@@ -18,6 +18,11 @@ pub struct Tile {
     pub flagged: bool,
 }
 
+enum PreviewState {
+    NoPreview,
+    Preview(usize, usize),
+}
+
 pub struct Game {
     w: usize,
     h: usize,
@@ -25,6 +30,7 @@ pub struct Game {
     state: GameState,
     field: Vec<Vec<Tile>>,
     flag_count: i32,
+    preview: PreviewState,
 }
 
 impl Game {
@@ -38,6 +44,7 @@ impl Game {
             state: GameState::Playing,
             field,
             flag_count: 0,
+            preview: PreviewState::NoPreview,
         }
     }
 
@@ -194,11 +201,56 @@ impl Game {
     }
 
     pub fn preview(&self) -> bool {
-        false
+        match self.preview {
+            PreviewState::NoPreview => false,
+            _ => true,
+        }
     }
 
     pub fn preview_at(&self, x: usize, y: usize) -> bool {
+        if !matches!(self.state, GameState::Playing) {
+            return false;
+        }
+
+        if let PreviewState::Preview(px, py) = self.preview {
+            let tile = &self.field[x][y];
+            if tile.revealed || tile.flagged {
+                return false;
+            }
+
+            if x == px && y == py {
+                return true;
+            }
+            if px.abs_diff(x) > 1 || py.abs_diff(y) > 1 {
+                return false;
+            }
+
+            let preview_tile = &self.field[px][py];
+            if !preview_tile.revealed {
+                return false;
+            }
+
+            if let TileContent::Empty(n) = preview_tile.content {
+                return if n > 0 { true } else { false };
+            }
+            return false;
+        }
         false
+    }
+
+    pub fn set_preview(&mut self, pos: Option<(usize, usize)>) {
+        if !matches!(self.state, GameState::Playing) {
+            return;
+        }
+        match pos {
+            None => self.preview = PreviewState::NoPreview,
+            Some((x, y)) => {
+                let tile = &self.field[x][y];
+                if !tile.flagged {
+                    self.preview = PreviewState::Preview(x, y)
+                }
+            }
+        }
     }
 
     pub fn state(&self) -> &GameState {

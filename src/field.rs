@@ -8,11 +8,6 @@ pub enum TileContent {
     Empty(i32),
     Bomb,
 }
-pub enum TileState {
-    Hidden,
-    Revealed,
-    Flagged,
-}
 
 // #[derive(Copy, Clone)]
 pub struct Tile {

@@ -1,9 +1,10 @@
 use rand::Rng;
+use std::time::{Duration, Instant};
 
 pub enum GameState {
-    Playing,
-    Victory(u32),
-    Boom(u32),
+    Playing(Option<Instant>),
+    Victory(Duration),
+    Boom(Duration),
 }
 
 pub enum TileContent {
@@ -41,7 +42,7 @@ impl Game {
             w,
             h,
             mine_count,
-            state: GameState::Playing,
+            state: GameState::Playing(None),
             field,
             flag_count: 0,
             preview: PreviewState::NoPreview,
@@ -197,7 +198,14 @@ impl Game {
     }
 
     pub fn time(&self) -> i32 {
-        888
+        match self.state {
+            GameState::Boom(t) => t.as_secs().min(999) as i32,
+            GameState::Victory(t) => t.as_secs().min(999) as i32,
+            GameState::Playing(Some(t)) => {
+                Instant::now().duration_since(t).as_secs().min(999) as i32
+            }
+            GameState::Playing(None) => 0,
+        }
     }
 
     pub fn preview(&self) -> bool {
@@ -208,7 +216,7 @@ impl Game {
     }
 
     pub fn preview_at(&self, x: usize, y: usize) -> bool {
-        if !matches!(self.state, GameState::Playing) {
+        if !matches!(self.state, GameState::Playing(_)) {
             return false;
         }
 
@@ -239,7 +247,7 @@ impl Game {
     }
 
     pub fn set_preview(&mut self, pos: Option<(usize, usize)>) {
-        if !matches!(self.state, GameState::Playing) {
+        if !matches!(self.state, GameState::Playing(_)) {
             return;
         }
         match pos {
@@ -262,7 +270,7 @@ impl Game {
     }
 
     pub fn flag_tile(&mut self, x: usize, y: usize) {
-        if !matches!(self.state, GameState::Playing) {
+        if !matches!(self.state, GameState::Playing(_)) {
             return;
         }
 

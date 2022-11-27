@@ -201,7 +201,7 @@ impl<'a> Drawer<'a> {
                     (true, true, TileContent::Empty(_)) => Rect::new(36, 36, 16, 16),
                     (true, false, TileContent::Empty(i)) => Rect::new(i * 18, 0, 16, 16),
                     (false, false, TileContent::Bomb) => {
-                        if matches!(game.state(), GameState::Playing) {
+                        if matches!(game.state(), GameState::Playing(_)) {
                             Rect::new(0, 36, 16, 16)
                         } else {
                             Rect::new(0, 18, 16, 16)
@@ -257,7 +257,7 @@ impl<'a> Drawer<'a> {
         let offset = match game.state() {
             GameState::Boom(_) => 2 * 24,
             GameState::Victory(_) => 1 * 24,
-            GameState::Playing => {
+            GameState::Playing(_) => {
                 if game.preview() {
                     3 * 24
                 } else {

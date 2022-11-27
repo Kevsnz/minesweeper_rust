@@ -278,6 +278,13 @@ impl<'a> Drawer<'a> {
     }
 
     pub fn handle_events(&mut self, game: &mut Game) -> bool {
+        let w = self
+            .window
+            .surface(&self.event_pump)
+            .expect("Cannot obtain window surface!")
+            .size()
+            .0 as i32;
+
         for event in self.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. }
@@ -295,6 +302,22 @@ impl<'a> Drawer<'a> {
                     let y = (y - 40) / 16;
                     if x >= 0 && x < game.width() as i32 && y >= 0 && y < game.height() as i32 {
                         game.flag_tile(x as usize, y as usize);
+                    }
+                }
+                Event::MouseButtonDown {
+                    mouse_btn: MouseButton::Left,
+                    x,
+                    y,
+                    ..
+                } => {
+                    if x >= w / 2 - 11 && y >= 7 && x < w / 2 + 11 && y < 29 {
+                        panic!("Starting new game not implemented!")
+                    } else {
+                        let x = (x - 4) / 16;
+                        let y = (y - 40) / 16;
+                        if x >= 0 && x < game.width() as i32 && y >= 0 && y < game.height() as i32 {
+                            game.reveal_tile(x as usize, y as usize);
+                        }
                     }
                 }
                 _ => {}

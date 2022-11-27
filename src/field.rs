@@ -282,4 +282,78 @@ impl Game {
         tile.flagged = !tile.flagged;
         self.flag_count += if tile.flagged { 1 } else { -1 }
     }
+
+    pub fn reveal_tile(&mut self, x: usize, y: usize) {
+        if !matches!(self.state, GameState::Playing(_)) {
+            return;
+        }
+        let tile = &mut self.field[x][y];
+        if tile.flagged {
+            return;
+        }
+
+        self.reveal_rec(x, y)
+    }
+
+    fn reveal_rec(&mut self, x: usize, y: usize) {
+        if matches!(self.state, GameState::Playing(None)) {
+            self.game_start();
+        }
+
+        let tile = &mut self.field[x][y];
+        tile.revealed = true;
+        match tile.content {
+            TileContent::Bomb => self.game_boom(),
+            TileContent::Empty(c) => {
+                if c == 0 {
+                    let (w, h) = self.size();
+                    Game::do_for_neightbors(
+                        x,
+                        y,
+                        |x, y| {
+                            let tile = &self.field[x][y];
+                            if !tile.revealed && !tile.flagged {
+                                self.reveal_rec(x, y)
+                            }
+                        },
+                        w,
+                        h,
+                    );
+                }
+            }
+        }
+    }
+
+    fn reveal_field(&self) {}
+
+    fn game_start(&mut self) {
+        if !matches!(self.state, GameState::Playing(Option::None)) {
+            return;
+        }
+        self.state = GameState::Playing(Some(Instant::now()));
+    }
+
+    fn game_boom(&mut self) {
+        match self.state {
+            GameState::Playing(t) => {
+                let now = Instant::now();
+                self.state = GameState::Boom(now.duration_since(t.unwrap_or(now)));
+                self.preview = PreviewState::NoPreview;
+                self.reveal_field();
+            }
+            _ => panic!("Cannot boom the game in current state!"),
+        }
+    }
+
+    fn game_yay(&mut self) {
+        match self.state {
+            GameState::Playing(t) => {
+                let now = Instant::now();
+                self.state = GameState::Victory(now.duration_since(t.unwrap_or(now)));
+                self.preview = PreviewState::NoPreview;
+                self.reveal_field();
+            }
+            _ => panic!("Cannot win the game in current state!"),
+        }
+    }
 }

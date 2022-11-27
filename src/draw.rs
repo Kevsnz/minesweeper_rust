@@ -205,7 +205,11 @@ impl<'a> Drawer<'a> {
                     (true, false, TileContent::Empty(i)) => Rect::new(i * 18, 0, 16, 16),
                     (false, false, TileContent::Bomb) => {
                         if matches!(game.state(), GameState::Playing(_)) {
-                            Rect::new(0, 36, 16, 16)
+                            if game.preview_at(x, y) {
+                                Rect::new(0, 0, 16, 16)
+                            } else {
+                                Rect::new(0, 36, 16, 16)
+                            }
                         } else {
                             Rect::new(0, 18, 16, 16)
                         }

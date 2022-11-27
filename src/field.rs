@@ -217,6 +217,7 @@ impl Game {
                 return;
             }
             tile.flagged = !tile.flagged;
+            self.flag_count += if tile.flagged { 1 } else { -1 }
         }
     }
 }

@@ -13,6 +13,7 @@ pub struct Drawer<'a> {
     window: sdl2::video::Window,
     event_pump: sdl2::EventPump,
     assets: Assets<'a>,
+    mouse_down: bool,
 }
 
 pub struct Assets<'a> {
@@ -70,6 +71,7 @@ impl<'a> Drawer<'a> {
             window,
             event_pump,
             assets,
+            mouse_down: false,
         };
 
         d
@@ -311,14 +313,43 @@ impl<'a> Drawer<'a> {
                     y,
                     ..
                 } => {
+                    self.mouse_down = true;
                     if x >= w / 2 - 11 && y >= 7 && x < w / 2 + 11 && y < 29 {
                         game.new_game();
                     } else {
                         let x = (x - 4) / 16;
                         let y = (y - 40) / 16;
                         if x >= 0 && x < game.width() as i32 && y >= 0 && y < game.height() as i32 {
-                            game.reveal_tile(x as usize, y as usize);
+                            game.set_preview(Some((x as usize, y as usize)));
                         }
+                    }
+                }
+                Event::MouseButtonUp {
+                    mouse_btn: MouseButton::Left,
+                    x,
+                    y,
+                    ..
+                } => {
+                    game.set_preview(None);
+                    self.mouse_down = false;
+                    let x = (x - 4) / 16;
+                    let y = (y - 40) / 16;
+                    if x >= 0 && x < game.width() as i32 && y >= 0 && y < game.height() as i32 {
+                        game.reveal_tile(x as usize, y as usize);
+                    }
+                }
+                Event::MouseMotion { x, y, .. } => {
+                    let x = (x - 4) / 16;
+                    let y = (y - 40) / 16;
+                    if self.mouse_down
+                        && x >= 0
+                        && x < game.width() as i32
+                        && y >= 0
+                        && y < game.height() as i32
+                    {
+                        game.set_preview(Some((x as usize, y as usize)));
+                    } else {
+                        game.set_preview(None);
                     }
                 }
                 _ => {}

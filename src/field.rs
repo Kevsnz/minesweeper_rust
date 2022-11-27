@@ -305,6 +305,18 @@ impl Game {
 
         if !tile.revealed {
             if matches!(self.state, GameState::Playing(None)) {
+                let (w, h) = self.size();
+                Game::do_for_neightbors(
+                    x,
+                    y,
+                    |x, y| {
+                        if matches!(self.field[x][y].content, TileContent::Bomb) {
+                            self.move_mine(x, y);
+                        }
+                    },
+                    w,
+                    h,
+                );
                 if matches!(self.field[x][y].content, TileContent::Bomb) {
                     self.move_mine(x, y);
                 }

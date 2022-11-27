@@ -299,6 +299,10 @@ impl<'a> Drawer<'a> {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => return true,
+                Event::KeyDown {
+                    keycode: Some(Keycode::F2),
+                    ..
+                } => game.new_game(),
                 Event::MouseButtonDown {
                     mouse_btn: MouseButton::Right,
                     x,

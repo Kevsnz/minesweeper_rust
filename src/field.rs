@@ -208,4 +208,15 @@ impl Game {
     pub fn get_field(&self) -> &Vec<Vec<Tile>> {
         &self.field
     }
+
+    pub fn flag_tile(&mut self, x: usize, y: usize) {
+        if let GameState::Playing = self.state {
+            let tile = &mut self.field[x][y];
+
+            if tile.revealed {
+                return;
+            }
+            tile.flagged = !tile.flagged;
+        }
+    }
 }

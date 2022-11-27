@@ -206,7 +206,13 @@ impl<'a> Drawer<'a> {
                             Rect::new(0, 18, 16, 16)
                         }
                     }
-                    (false, false, _) => Rect::new(0, 36, 16, 16),
+                    (false, false, _) => {
+                        if game.preview_at(x, y) {
+                            Rect::new(0, 0, 16, 16)
+                        } else {
+                            Rect::new(0, 36, 16, 16)
+                        }
+                    }
 
                     (_, true, TileContent::Bomb) => Rect::new(18, 36, 16, 16),
                     (_, _, _) => Rect::new(36, 18, 16, 16),

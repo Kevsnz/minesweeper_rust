@@ -197,6 +197,10 @@ impl Game {
         false
     }
 
+    pub fn preview_at(&self, x: usize, y: usize) -> bool {
+        false
+    }
+
     pub fn state(&self) -> &GameState {
         &self.state
     }

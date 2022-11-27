@@ -7,6 +7,8 @@ mod field;
 use draw::Drawer;
 use field::Game;
 
+const FPS: f64 = 60.0;
+
 fn main() {
     let game = field::Game::new(10, 10, 16);
     let drawer = Drawer::initialize_game(game.width() as u32, game.height() as u32);
@@ -14,7 +16,7 @@ fn main() {
 }
 
 fn run_game_loop(mut drawer: Drawer, mut game: Game) {
-    let fps_time = Duration::from_secs_f64(1.0 / 60.0);
+    let fps_time = Duration::from_secs_f64(1.0 / FPS);
     let mut i = 0.0;
     let mut next = Instant::now().checked_add(fps_time).unwrap();
 

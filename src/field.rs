@@ -210,14 +210,16 @@ impl Game {
     }
 
     pub fn flag_tile(&mut self, x: usize, y: usize) {
-        if let GameState::Playing = self.state {
-            let tile = &mut self.field[x][y];
-
-            if tile.revealed {
-                return;
-            }
-            tile.flagged = !tile.flagged;
-            self.flag_count += if tile.flagged { 1 } else { -1 }
+        if !matches!(self.state, GameState::Playing) {
+            return;
         }
+
+        let tile = &mut self.field[x][y];
+
+        if tile.revealed {
+            return;
+        }
+        tile.flagged = !tile.flagged;
+        self.flag_count += if tile.flagged { 1 } else { -1 }
     }
 }

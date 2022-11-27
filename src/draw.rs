@@ -1,5 +1,6 @@
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::mouse::MouseButton;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::surface::Surface;
@@ -284,6 +285,18 @@ impl<'a> Drawer<'a> {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => return true,
+                Event::MouseButtonDown {
+                    mouse_btn: MouseButton::Right,
+                    x,
+                    y,
+                    ..
+                } => {
+                    let x = (x - 4) / 16;
+                    let y = (y - 40) / 16;
+                    if x >= 0 && x < game.width() as i32 && y >= 0 && y < game.height() as i32 {
+                        game.flag_tile(x as usize, y as usize);
+                    }
+                }
                 _ => {}
             }
         }

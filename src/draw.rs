@@ -201,7 +201,7 @@ impl<'a> Drawer<'a> {
                     (true, true, TileContent::Empty(_)) => Rect::new(36, 36, 16, 16),
                     (true, false, TileContent::Empty(i)) => Rect::new(i * 18, 0, 16, 16),
                     (false, false, TileContent::Bomb) => {
-                        if let GameState::Playing = game.state() {
+                        if matches!(game.state(), GameState::Playing) {
                             Rect::new(0, 36, 16, 16)
                         } else {
                             Rect::new(0, 18, 16, 16)
@@ -215,7 +215,7 @@ impl<'a> Drawer<'a> {
                         }
                     }
 
-                    (_, true, TileContent::Bomb) => Rect::new(18, 36, 16, 16),
+                    (false, true, _) => Rect::new(18, 36, 16, 16),
                     (_, _, _) => Rect::new(36, 18, 16, 16),
                 };
 

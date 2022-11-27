@@ -49,6 +49,14 @@ impl Game {
         }
     }
 
+    pub fn new_game(&mut self) {
+        let field = Game::generate_field(self.w, self.h, self.mine_count);
+        self.field = field;
+        self.state = GameState::Playing(None);
+        self.flag_count = 0;
+        self.preview = PreviewState::NoPreview;
+    }
+
     fn generate_field(w: usize, h: usize, mine_count: i32) -> Vec<Vec<Tile>> {
         let mut field: Vec<Vec<Tile>> = vec![];
         for _ in 0..w {

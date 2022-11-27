@@ -311,7 +311,7 @@ impl<'a> Drawer<'a> {
                     ..
                 } => {
                     if x >= w / 2 - 11 && y >= 7 && x < w / 2 + 11 && y < 29 {
-                        panic!("Starting new game not implemented!")
+                        game.new_game();
                     } else {
                         let x = (x - 4) / 16;
                         let y = (y - 40) / 16;

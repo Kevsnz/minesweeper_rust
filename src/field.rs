@@ -303,7 +303,46 @@ impl Game {
             return;
         }
 
-        self.reveal_rec(x, y);
+        if !tile.revealed {
+            if matches!(self.state, GameState::Playing(None)) {
+                if matches!(self.field[x][y].content, TileContent::Bomb) {
+                    self.move_mine(x, y);
+                }
+                self.game_start();
+            }
+            self.reveal_rec(x, y);
+        } else {
+            if let TileContent::Empty(c) = tile.content {
+                let (w, h) = self.size();
+                let mut flags = 0;
+                Game::do_for_neightbors(
+                    x,
+                    y,
+                    |x, y| {
+                        if self.field[x][y].flagged {
+                            flags += 1;
+                        }
+                    },
+                    w,
+                    h,
+                );
+                if c == flags {
+                    Game::do_for_neightbors(
+                        x,
+                        y,
+                        |x, y| {
+                            if !self.field[x][y].flagged && !self.field[x][y].revealed {
+                                self.reveal_rec(x, y)
+                            }
+                        },
+                        w,
+                        h,
+                    );
+                }
+            } else {
+                panic!("Invalid tile content for revealing!");
+            }
+        }
 
         if self.revealed_count + self.mine_count == (self.w * self.h) as i32 {
             self.game_yay();
@@ -311,10 +350,6 @@ impl Game {
     }
 
     fn reveal_rec(&mut self, x: usize, y: usize) {
-        if matches!(self.state, GameState::Playing(None)) {
-            self.game_start();
-        }
-
         let tile = &mut self.field[x][y];
         tile.revealed = true;
         self.revealed_count += 1;
@@ -340,7 +375,22 @@ impl Game {
         }
     }
 
-    fn reveal_field(&self) {}
+    fn reveal_field(&mut self) {
+        let (w, h) = self.size();
+
+        for x in 0..w {
+            for y in 0..h {
+                if matches!(self.state, GameState::Victory(_)) {
+                    if matches!(self.field[x][y].content, TileContent::Bomb) {
+                        self.field[x][y].flagged = true;
+                    }
+                }
+                if self.field[x][y].flagged {
+                    self.field[x][y].revealed = true;
+                }
+            }
+        }
+    }
 
     fn game_start(&mut self) {
         if !matches!(self.state, GameState::Playing(Option::None)) {
